@@ -1,0 +1,243 @@
+"""
+Cloud ETL Pipeline - Project Summary
+====================================
+
+A production-ready ETL pipeline for processing large datasets from AWS S3 using PySpark
+and loading into AWS Redshift data warehouse.
+
+PROJECT STRUCTURE
+-----------------
+cloud-etl-pipeline/
+├── etl/                          # Main package
+│   ├── extract/                  # Data extraction from S3
+│   │   └── s3_extractor.py      # S3 operations (list, download, upload)
+│   ├── transform/                # Data transformation with PySpark
+│   │   └── transformer.py       # Cleaning, aggregation, filtering
+│   ├── load/                     # Data warehouse loading
+│   │   └── redshift_loader.py   # Redshift COPY and JDBC operations
+│   ├── utils/                    # Utilities
+│   │   ├── config.py            # Configuration management
+│   │   ├── logger.py            # Logging setup
+│   │   ├── spark_manager.py     # Spark session lifecycle
+│   │   └── exceptions.py        # Custom exceptions
+│   └── pipeline.py              # Main ETL orchestrator
+├── config/
+│   └── config.yml               # Pipeline configuration
+├── tests/                        # Unit tests
+├── examples.py                   # Usage examples
+├── generate_sample_data.py       # Test data generator
+├── pyproject.toml                # Poetry dependencies
+├── Makefile                      # Convenience commands
+├── README.md                     # Full documentation
+├── QUICKSTART.md                 # Quick start guide
+└── DEPLOYMENT.md                 # Production deployment guide
+
+KEY FEATURES
+------------
+1. **Extract**: Pull large datasets from S3
+   - Multiple file format support (Parquet, CSV, JSON)
+   - Batch and prefix-based extraction
+   - S3 object management
+
+2. **Transform**: Process data with PySpark
+   - Data cleaning and deduplication
+   - Null value handling
+   - Derived column generation (timestamps, date parts)
+   - Aggregations and filtering
+   - Custom transformations
+   - Data quality metrics
+
+3. **Load**: Load into Redshift data warehouse
+   - Direct S3 to Redshift COPY
+   - DataFrame to Redshift via JDBC
+   - Append and overwrite modes
+   - Table management
+
+4. **Configuration**: Flexible configuration
+   - YAML-based configuration files
+   - Environment variable support
+   - Separate configs for dev/staging/prod
+
+5. **Logging**: Comprehensive logging
+   - Console and file output
+   - Configurable log levels
+   - Timestamped log files
+
+6. **Error Handling**: Robust error handling
+   - Custom exception hierarchy
+   - Graceful failure handling
+   - Resource cleanup
+
+QUICK START
+-----------
+1. Install dependencies:
+   $ poetry install
+
+2. Configure environment:
+   $ cp .env.example .env
+   # Edit .env with your AWS credentials
+
+3. Run example pipeline:
+   $ poetry run python examples.py
+
+COMMON COMMANDS
+---------------
+# Install dependencies
+$ make install
+
+# Run tests
+$ make test
+
+# Format code
+$ make format
+
+# Run pipeline
+$ make run
+
+# Clean temporary files
+$ make clean
+
+DEPLOYMENT OPTIONS
+------------------
+1. AWS EC2 (Traditional VM deployment)
+2. AWS ECS/Fargate (Docker containers)
+3. AWS Lambda (Serverless, small datasets)
+4. AWS Glue (AWS-native, recommended)
+
+CONFIGURATION FILES
+-------------------
+1. .env                    # Environment variables (credentials)
+2. config/config.yml       # Pipeline configuration
+3. pyproject.toml          # Python dependencies
+
+EXAMPLE USAGE
+-------------
+from etl.pipeline import ETLPipeline
+
+pipeline = ETLPipeline()
+
+try:
+    pipeline.run(
+        source_prefix='sales_data',
+        target_table='sales_fact',
+        file_format='parquet',
+        transformation_config={
+            'clean_data': True,
+            'drop_duplicates': True,
+            'add_derived_columns': True,
+            'timestamp_column': 'transaction_date',
+            'partition_by': ['year', 'month']
+        },
+        load_mode='append'
+    )
+finally:
+    pipeline.cleanup()
+
+TRANSFORMATION OPTIONS
+----------------------
+- clean_data: Enable data cleaning
+- drop_duplicates: Remove duplicate rows
+- drop_null_columns: List of columns to drop if null
+- fill_null_values: Dict of column -> fill value
+- add_derived_columns: Add timestamp/date columns
+- timestamp_column: Column to extract date parts from
+- filter_conditions: SQL-like filter string
+- aggregate: Dict with group_by and expressions
+- partition_by: List of columns for partitioning output
+
+AWS SERVICES USED
+-----------------
+- S3: Data lake for raw and processed data
+- Redshift: Data warehouse for analytics
+- IAM: Access management
+- (Optional) Glue: Serverless ETL
+- (Optional) EventBridge: Scheduling
+- (Optional) CloudWatch: Monitoring and logging
+
+DEPENDENCIES
+------------
+Core:
+- PySpark 3.5+: Distributed data processing
+- boto3: AWS SDK for Python
+- psycopg2: PostgreSQL/Redshift adapter
+- PyYAML: Configuration parsing
+- python-dotenv: Environment variables
+
+Development:
+- pytest: Testing framework
+- black: Code formatting
+- flake8: Linting
+- mypy: Type checking
+
+DATA FLOW
+---------
+1. Extract: Read from S3 bucket (raw-data/)
+2. Transform: Process with PySpark
+   - Clean data
+   - Apply transformations
+   - Generate metrics
+3. Write: Save to S3 (processed-data/)
+4. Load: Copy to Redshift data warehouse
+
+MONITORING
+----------
+- Application logs: logs/ETLPipeline_*.log
+- CloudWatch logs (in AWS deployments)
+- Data quality metrics
+- Pipeline execution metrics
+
+BEST PRACTICES
+--------------
+1. Use Parquet format for better performance
+2. Partition large datasets by date
+3. Enable S3 versioning for data lineage
+4. Use IAM roles instead of access keys
+5. Monitor CloudWatch metrics
+6. Implement retry logic for failures
+7. Test with sample data first
+8. Use separate environments (dev/staging/prod)
+
+TROUBLESHOOTING
+---------------
+1. Import errors: Run `poetry install`
+2. S3 access denied: Check AWS credentials and IAM permissions
+3. Redshift connection failed: Verify cluster status and security groups
+4. Out of memory: Increase Spark executor/driver memory
+5. Slow performance: Enable partitioning and optimize Spark config
+
+NEXT STEPS
+----------
+1. Set up AWS infrastructure (S3, Redshift)
+2. Configure environment variables
+3. Upload sample data to S3
+4. Run test pipeline
+5. Deploy to production
+6. Set up monitoring and alerting
+7. Schedule regular runs
+
+DOCUMENTATION
+-------------
+- README.md: Full documentation
+- QUICKSTART.md: Quick start guide
+- DEPLOYMENT.md: Production deployment
+- examples.py: Usage examples
+- config/config.yml: Configuration reference
+
+SUPPORT
+-------
+For issues and questions:
+1. Check documentation
+2. Review logs
+3. Consult troubleshooting section
+4. Open GitHub issue
+
+AUTHOR
+------
+Developed with Poetry for dependency management
+Python 3.9+ required
+AWS account required
+
+LICENSE
+-------
+MIT License
+"""
