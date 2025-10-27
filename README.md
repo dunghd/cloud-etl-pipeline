@@ -85,16 +85,19 @@ cloud-etl-pipeline/
 ## Installation
 
 1. **Clone the repository**:
+
    ```bash
    cd /Users/dung.ho/Documents/Training/Python/cloud-etl-pipeline
    ```
 
 2. **Install Poetry** (if not already installed):
+
    ```bash
    curl -sSL https://install.python-poetry.org | python3 -
    ```
 
 3. **Install dependencies**:
+
    ```bash
    poetry install
    ```
@@ -107,20 +110,22 @@ cloud-etl-pipeline/
 ## Configuration
 
 1. **Copy the environment template**:
+
    ```bash
    cp .env.example .env
    ```
 
 2. **Edit `.env` file** with your AWS credentials and configuration:
+
    ```env
    AWS_ACCESS_KEY_ID=your_access_key_id
    AWS_SECRET_ACCESS_KEY=your_secret_access_key
    AWS_REGION=us-east-1
-   
+
    S3_BUCKET_NAME=your-etl-bucket
    S3_RAW_DATA_PREFIX=raw-data/
    S3_PROCESSED_DATA_PREFIX=processed-data/
-   
+
    REDSHIFT_HOST=your-cluster.region.redshift.amazonaws.com
    REDSHIFT_PORT=5439
    REDSHIFT_DATABASE=your_database
@@ -177,7 +182,7 @@ try:
         s3_prefix='raw-data/customer_data',
         file_format='csv'
     )
-    
+
     # Transform
     transformed_path = pipeline.transform(
         input_s3_path=extracted_path,
@@ -190,7 +195,7 @@ try:
             'partition_by': ['country', 'year']
         }
     )
-    
+
     # Load
     pipeline.load(
         s3_path=transformed_path,
@@ -252,36 +257,34 @@ Your IAM user/role needs these permissions:
 
 ```json
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:GetObject",
-                "s3:PutObject",
-                "s3:ListBucket",
-                "s3:DeleteObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::your-etl-bucket/*",
-                "arn:aws:s3:::your-etl-bucket"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "redshift:DescribeClusters",
-                "redshift-data:ExecuteStatement"
-            ],
-            "Resource": "*"
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListBucket",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::your-etl-bucket/*",
+        "arn:aws:s3:::your-etl-bucket"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["redshift:DescribeClusters", "redshift-data:ExecuteStatement"],
+      "Resource": "*"
+    }
+  ]
 }
 ```
 
 ### Redshift Setup
 
 1. Create a table in Redshift:
+
    ```sql
    CREATE TABLE IF NOT EXISTS sales_fact (
        transaction_id VARCHAR(50),
@@ -327,6 +330,7 @@ poetry run mypy etl/
 ## Monitoring and Logging
 
 Logs are written to:
+
 - Console (stdout)
 - File: `logs/ETLPipeline_YYYYMMDD_HHMMSS.log`
 
@@ -342,10 +346,10 @@ Adjust in `config/config.yml`:
 
 ```yaml
 spark:
-  executor_memory: "8g"      # Increase for larger datasets
-  driver_memory: "4g"
+  executor_memory: '8g' # Increase for larger datasets
+  driver_memory: '4g'
   executor_cores: 4
-  max_result_size: "4g"
+  max_result_size: '4g'
 ```
 
 ### Partitioning
@@ -369,15 +373,18 @@ transformation_config={
 ### Common Issues
 
 1. **"Import pyspark could not be resolved"**
+
    - Install dependencies: `poetry install`
    - Ensure Java is installed: `java -version`
 
 2. **S3 Access Denied**
+
    - Check AWS credentials in `.env`
    - Verify IAM permissions
    - Ensure bucket name is correct
 
 3. **Redshift Connection Failed**
+
    - Check Redshift cluster is running
    - Verify security group allows your IP
    - Confirm credentials in `.env`

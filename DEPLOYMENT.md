@@ -71,33 +71,33 @@ Create an IAM policy for the ETL pipeline:
 
 ```json
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "S3Access",
-            "Effect": "Allow",
-            "Action": [
-                "s3:GetObject",
-                "s3:PutObject",
-                "s3:DeleteObject",
-                "s3:ListBucket"
-            ],
-            "Resource": [
-                "arn:aws:s3:::your-production-etl-bucket/*",
-                "arn:aws:s3:::your-production-etl-bucket"
-            ]
-        },
-        {
-            "Sid": "RedshiftDataAccess",
-            "Effect": "Allow",
-            "Action": [
-                "redshift:DescribeClusters",
-                "redshift-data:ExecuteStatement",
-                "redshift-data:GetStatementResult"
-            ],
-            "Resource": "*"
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S3Access",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::your-production-etl-bucket/*",
+        "arn:aws:s3:::your-production-etl-bucket"
+      ]
+    },
+    {
+      "Sid": "RedshiftDataAccess",
+      "Effect": "Allow",
+      "Action": [
+        "redshift:DescribeClusters",
+        "redshift-data:ExecuteStatement",
+        "redshift-data:GetStatementResult"
+      ],
+      "Resource": "*"
+    }
+  ]
 }
 ```
 
@@ -106,6 +106,7 @@ Create an IAM policy for the ETL pipeline:
 #### Option 1: AWS EC2
 
 1. **Launch EC2 Instance**
+
 ```bash
 # Use Amazon Linux 2 or Ubuntu
 # Instance type: t3.large or larger (for Spark)
@@ -113,6 +114,7 @@ Create an IAM policy for the ETL pipeline:
 ```
 
 2. **Install Dependencies**
+
 ```bash
 # Update system
 sudo yum update -y  # Amazon Linux
@@ -137,6 +139,7 @@ poetry install --no-dev
 ```
 
 3. **Configure Environment**
+
 ```bash
 # Create .env file
 cp .env.example .env
@@ -147,6 +150,7 @@ chmod 600 .env
 ```
 
 4. **Setup Systemd Service**
+
 ```bash
 # Create service file
 sudo nano /etc/systemd/system/etl-pipeline.service
@@ -214,6 +218,7 @@ CMD ["python", "-m", "etl.pipeline"]
 ```
 
 2. **Build and Push Image**
+
 ```bash
 # Build image
 docker build -t etl-pipeline:latest .
@@ -227,52 +232,63 @@ docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/etl-pipeline:latest
 ```
 
 3. **Create ECS Task Definition**
+
 ```json
 {
-    "family": "etl-pipeline",
-    "networkMode": "awsvpc",
-    "requiresCompatibilities": ["FARGATE"],
-    "cpu": "2048",
-    "memory": "8192",
-    "containerDefinitions": [{
-        "name": "etl-pipeline",
-        "image": "<account-id>.dkr.ecr.us-east-1.amazonaws.com/etl-pipeline:latest",
-        "environment": [
-            {"name": "AWS_REGION", "value": "us-east-1"},
-            {"name": "ENVIRONMENT", "value": "production"}
-        ],
-        "secrets": [
-            {"name": "AWS_ACCESS_KEY_ID", "valueFrom": "arn:aws:secretsmanager:..."},
-            {"name": "AWS_SECRET_ACCESS_KEY", "valueFrom": "arn:aws:secretsmanager:..."}
-        ],
-        "logConfiguration": {
-            "logDriver": "awslogs",
-            "options": {
-                "awslogs-group": "/ecs/etl-pipeline",
-                "awslogs-region": "us-east-1",
-                "awslogs-stream-prefix": "ecs"
-            }
+  "family": "etl-pipeline",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "2048",
+  "memory": "8192",
+  "containerDefinitions": [
+    {
+      "name": "etl-pipeline",
+      "image": "<account-id>.dkr.ecr.us-east-1.amazonaws.com/etl-pipeline:latest",
+      "environment": [
+        { "name": "AWS_REGION", "value": "us-east-1" },
+        { "name": "ENVIRONMENT", "value": "production" }
+      ],
+      "secrets": [
+        {
+          "name": "AWS_ACCESS_KEY_ID",
+          "valueFrom": "arn:aws:secretsmanager:..."
+        },
+        {
+          "name": "AWS_SECRET_ACCESS_KEY",
+          "valueFrom": "arn:aws:secretsmanager:..."
         }
-    }]
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/etl-pipeline",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
 }
 ```
 
 #### Option 3: AWS Lambda (for small datasets)
 
 1. **Create deployment package**
+
 ```bash
 # Use AWS Lambda Layers for PySpark
 # Note: Lambda has 512MB /tmp limit, suitable only for smaller datasets
 ```
 
 2. **Lambda Function Code**
+
 ```python
 import json
 from etl.pipeline import ETLPipeline
 
 def lambda_handler(event, context):
     pipeline = ETLPipeline()
-    
+
     try:
         pipeline.run(
             source_prefix=event['source_prefix'],
@@ -280,7 +296,7 @@ def lambda_handler(event, context):
             file_format=event.get('file_format', 'parquet'),
             load_mode=event.get('load_mode', 'append')
         )
-        
+
         return {
             'statusCode': 200,
             'body': json.dumps('ETL pipeline completed successfully')
@@ -343,16 +359,16 @@ crontab -e
 
 ```json
 {
-    "ScheduleExpression": "cron(0 2 * * ? *)",
-    "Target": {
-        "Arn": "arn:aws:ecs:us-east-1:123456789012:cluster/etl-cluster",
-        "RoleArn": "arn:aws:iam::123456789012:role/ecsEventsRole",
-        "EcsParameters": {
-            "TaskDefinitionArn": "arn:aws:ecs:us-east-1:123456789012:task-definition/etl-pipeline:1",
-            "TaskCount": 1,
-            "LaunchType": "FARGATE"
-        }
+  "ScheduleExpression": "cron(0 2 * * ? *)",
+  "Target": {
+    "Arn": "arn:aws:ecs:us-east-1:123456789012:cluster/etl-cluster",
+    "RoleArn": "arn:aws:iam::123456789012:role/ecsEventsRole",
+    "EcsParameters": {
+      "TaskDefinitionArn": "arn:aws:ecs:us-east-1:123456789012:task-definition/etl-pipeline:1",
+      "TaskCount": 1,
+      "LaunchType": "FARGATE"
     }
+  }
 }
 ```
 
@@ -463,6 +479,7 @@ tail -f logs/ETLPipeline_*.log
 ## Support
 
 For production issues:
+
 - Check CloudWatch logs
 - Review application logs in `logs/`
 - Verify AWS service health

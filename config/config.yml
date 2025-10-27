@@ -1,48 +1,48 @@
 # Pipeline Configuration
 pipeline:
-  name: "cloud-etl-pipeline"
-  version: "0.1.0"
-  environment: "development"
+  name: 'cloud-etl-pipeline'
+  version: '0.1.0'
+  environment: 'development'
 
 # AWS Configuration
 aws:
-  region: "us-east-1"
-  
+  region: 'us-east-1'
+
 # S3 Configuration
 s3:
-  bucket_name: "your-etl-bucket"
-  raw_data_prefix: "raw-data/"
-  processed_data_prefix: "processed-data/"
-  temp_prefix: "temp/"
-  file_format: "parquet"  # Options: parquet, csv, json
-  
+  bucket_name: 'your-etl-bucket'
+  raw_data_prefix: 'raw-data/'
+  processed_data_prefix: 'processed-data/'
+  temp_prefix: 'temp/'
+  file_format: 'parquet' # Options: parquet, csv, json
+
 # Spark Configuration
 spark:
-  app_name: "CloudETLPipeline"
-  master: "local[*]"  # Use "yarn" or "spark://host:port" for cluster mode
-  executor_memory: "4g"
-  driver_memory: "2g"
+  app_name: 'CloudETLPipeline'
+  master: 'local[*]' # Use "yarn" or "spark://host:port" for cluster mode
+  executor_memory: '4g'
+  driver_memory: '2g'
   executor_cores: 2
-  max_result_size: "2g"
-  
+  max_result_size: '2g'
+
 # Data Warehouse Configuration (Redshift)
 redshift:
-  host: "your-cluster.region.redshift.amazonaws.com"
+  host: 'your-cluster.region.redshift.amazonaws.com'
   port: 5439
-  database: "your_database"
-  schema: "public"
-  temp_dir: "s3://your-etl-bucket/temp/"
-  
+  database: 'your_database'
+  schema: 'public'
+  temp_dir: 's3://your-etl-bucket/temp/'
+
 # Processing Configuration
 processing:
   batch_size: 10000
   partition_count: 10
   repartition: true
   cache_intermediate: true
-  
+
 # Logging Configuration
 logging:
-  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  level: 'INFO' # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
   log_to_file: true
-  log_dir: "logs"
+  log_dir: 'logs'

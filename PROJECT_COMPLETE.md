@@ -120,12 +120,14 @@ poetry run python examples.py
 ## 🔑 Key Features
 
 ### ✅ Extract
+
 - Pull large datasets from AWS S3
 - Support for Parquet, CSV, JSON formats
 - Batch and prefix-based extraction
 - S3 object management (list, download, upload, delete)
 
 ### ✅ Transform
+
 - PySpark-based distributed processing
 - Data cleaning and deduplication
 - Null value handling (drop/fill)
@@ -135,6 +137,7 @@ poetry run python examples.py
 - Partitioning support
 
 ### ✅ Load
+
 - Direct S3 to Redshift COPY
 - DataFrame to Redshift via JDBC
 - Append and overwrite modes
@@ -142,18 +145,21 @@ poetry run python examples.py
 - Batch loading optimization
 
 ### ✅ Configuration
+
 - YAML-based configuration files
 - Environment variable support
 - Separate configs for dev/staging/prod
 - Centralized configuration management
 
 ### ✅ Logging & Monitoring
+
 - Console and file logging
 - Configurable log levels
 - Timestamped log files
 - Comprehensive error tracking
 
 ### ✅ Development Tools
+
 - Poetry for dependency management
 - Makefile for common tasks
 - Unit tests with pytest
@@ -165,13 +171,13 @@ poetry run python examples.py
 
 ## 📚 Documentation
 
-| Document | Description |
-|----------|-------------|
-| **README.md** | Complete documentation with installation, usage, and troubleshooting |
-| **QUICKSTART.md** | Get started in 5 minutes |
-| **DEPLOYMENT.md** | Production deployment guide with AWS setup |
-| **ARCHITECTURE.md** | Visual diagrams and architecture overview |
-| **PROJECT_SUMMARY.txt** | Quick reference and project summary |
+| Document                | Description                                                          |
+| ----------------------- | -------------------------------------------------------------------- |
+| **README.md**           | Complete documentation with installation, usage, and troubleshooting |
+| **QUICKSTART.md**       | Get started in 5 minutes                                             |
+| **DEPLOYMENT.md**       | Production deployment guide with AWS setup                           |
+| **ARCHITECTURE.md**     | Visual diagrams and architecture overview                            |
+| **PROJECT_SUMMARY.txt** | Quick reference and project summary                                  |
 
 ---
 
@@ -266,24 +272,28 @@ pipeline.run(
 ## 🔧 Technology Stack
 
 ### Core Technologies
+
 - **Python 3.9+**: Programming language
 - **Poetry**: Dependency management
 - **PySpark 3.5+**: Distributed data processing
 - **boto3**: AWS SDK for Python
 
 ### AWS Services
+
 - **S3**: Data lake storage
 - **Redshift**: Data warehouse
 - **IAM**: Access management
 - **CloudWatch**: Monitoring and logging
 
 ### Development Tools
+
 - **pytest**: Testing framework
 - **Black**: Code formatter
 - **flake8**: Linter
 - **mypy**: Type checker
 
 ### Python Libraries
+
 - **psycopg2**: PostgreSQL/Redshift adapter
 - **PyYAML**: YAML parser
 - **python-dotenv**: Environment variables
@@ -316,6 +326,7 @@ pipeline.run(
 ## ⚠️ Important Notes
 
 ### Prerequisites
+
 - ✅ Python 3.9 or higher
 - ✅ Java 8+ (for PySpark)
 - ✅ Poetry installed
@@ -323,6 +334,7 @@ pipeline.run(
 - ✅ AWS credentials configured
 
 ### Security
+
 - 🔒 Never commit .env file to git
 - 🔒 Use IAM roles instead of access keys when possible
 - 🔒 Enable S3 encryption at rest
@@ -330,6 +342,7 @@ pipeline.run(
 - 🔒 Implement least privilege access
 
 ### Performance Tips
+
 - 🚀 Use Parquet format for better compression
 - 🚀 Partition large datasets by date
 - 🚀 Configure Spark memory based on data size
@@ -340,13 +353,13 @@ pipeline.run(
 
 ## 🐛 Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| Import errors | Run `poetry install` |
-| S3 access denied | Check AWS credentials in .env |
+| Issue                      | Solution                                                    |
+| -------------------------- | ----------------------------------------------------------- |
+| Import errors              | Run `poetry install`                                        |
+| S3 access denied           | Check AWS credentials in .env                               |
 | Redshift connection failed | Verify cluster is running and security group allows your IP |
-| Out of memory | Increase Spark executor/driver memory in config.yml |
-| Slow transformations | Enable partitioning and optimize Spark configuration |
+| Out of memory              | Increase Spark executor/driver memory in config.yml         |
+| Slow transformations       | Enable partitioning and optimize Spark configuration        |
 
 ---
 
@@ -392,6 +405,7 @@ A **complete, production-ready ETL pipeline** with:
 ## 🏆 Congratulations!
 
 You now have a complete cloud ETL pipeline ready for:
+
 - ✅ Development and testing
 - ✅ Staging deployment
 - ✅ Production deployment
@@ -401,4 +415,4 @@ You now have a complete cloud ETL pipeline ready for:
 
 ---
 
-*Built with ❤️ using Python, PySpark, AWS, and Poetry*
+_Built with ❤️ using Python, PySpark, AWS, and Poetry_

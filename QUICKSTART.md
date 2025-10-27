@@ -111,12 +111,15 @@ extractor.upload_file('local/file.parquet', 'raw-data/sales_data/file.parquet')
 ## ❓ Quick Troubleshooting
 
 **Issue**: "Import pyspark could not be resolved"
+
 - **Fix**: Run `poetry install` and ensure Java is installed
 
 **Issue**: "S3 Access Denied"
+
 - **Fix**: Check AWS credentials in `.env` and IAM permissions
 
 **Issue**: "Redshift connection failed"
+
 - **Fix**: Verify cluster is running and security group allows your IP
 
 ## 📚 Resources
