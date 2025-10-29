@@ -52,19 +52,27 @@ class SparkManager(LoggerMixin):
             .config('spark.driver.maxResultSize', max_result_size)
         
         # Add Hadoop AWS dependencies for S3 access
+        # Using compatible versions for Hadoop 3.3.x
         builder = builder \
             .config('spark.jars.packages', 
-                   'org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262') \
-            .config('spark.hadoop.fs.s3a.impl', 'org.apache.hadoop.fs.s3a.S3AFileSystem')
+                   'org.apache.hadoop:hadoop-aws:3.3.4,'
+                   'com.amazonaws:aws-java-sdk-bundle:1.12.262,'
+                   'org.apache.hadoop:hadoop-common:3.3.4') \
+            .config('spark.hadoop.fs.s3a.impl', 'org.apache.hadoop.fs.s3a.S3AFileSystem') \
+            .config('spark.hadoop.fs.s3.impl', 'org.apache.hadoop.fs.s3a.S3AFileSystem')
         
         # Configure AWS credentials if provided
         aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
         aws_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+        aws_region = os.getenv('AWS_REGION', 'us-east-1')
         
         if aws_access_key and aws_secret_key:
             builder = builder \
                 .config('spark.hadoop.fs.s3a.access.key', aws_access_key) \
-                .config('spark.hadoop.fs.s3a.secret.key', aws_secret_key)
+                .config('spark.hadoop.fs.s3a.secret.key', aws_secret_key) \
+                .config('spark.hadoop.fs.s3a.endpoint', f's3.{aws_region}.amazonaws.com') \
+                .config('spark.hadoop.fs.s3a.aws.credentials.provider', 
+                       'org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider')
         
         self._spark_session = builder.getOrCreate()
         

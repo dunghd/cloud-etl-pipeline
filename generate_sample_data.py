@@ -51,7 +51,11 @@ def save_sample_data():
     
     # Save in different formats
     print("Saving as Parquet...")
-    df.to_parquet('data/raw/sample_data/sales_data.parquet', index=False)
+    # Use microsecond precision for compatibility with PySpark
+    df.to_parquet('data/raw/sample_data/sales_data.parquet', 
+                  index=False, 
+                  coerce_timestamps='ms',  # Use millisecond precision
+                  allow_truncated_timestamps=True)
     
     print("Saving as CSV...")
     df.to_csv('data/raw/sample_data/sales_data.csv', index=False)
