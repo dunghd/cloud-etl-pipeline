@@ -32,7 +32,7 @@ redshift:
   database: 'your_database'
   schema: 'public'
   temp_dir: 's3://your-etl-bucket/temp/'
-  iam_role: 'arn:aws:iam::ACCOUNT_ID:role/RedshiftS3CopyRole'  # Will be replaced by env var REDSHIFT_IAM_ROLE
+  iam_role: 'arn:aws:iam::ACCOUNT_ID:role/RedshiftS3CopyRole' # Will be replaced by env var REDSHIFT_IAM_ROLE
 
 # Processing Configuration
 processing:
