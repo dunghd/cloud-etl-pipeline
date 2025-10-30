@@ -74,7 +74,8 @@ class ETLPipeline:
             user=redshift_config['user'],
             password=redshift_config['password'],
             schema=redshift_config['schema'],
-            temp_dir=redshift_config.get('temp_dir')
+            temp_dir=redshift_config.get('temp_dir'),
+            iam_role=redshift_config.get('iam_role')
         )
         
         self.logger.info("All components initialized successfully")

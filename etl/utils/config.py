@@ -87,7 +87,8 @@ class Config:
             'user': os.getenv('REDSHIFT_USER'),
             'password': os.getenv('REDSHIFT_PASSWORD'),
             'schema': os.getenv('REDSHIFT_SCHEMA', self.get('redshift.schema', 'public')),
-            'temp_dir': self.get('redshift.temp_dir')
+            'temp_dir': self.get('redshift.temp_dir'),
+            'iam_role': os.getenv('REDSHIFT_IAM_ROLE', self.get('redshift.iam_role'))
         }
     
     def get_spark_config(self) -> Dict[str, Any]:

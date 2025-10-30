@@ -19,7 +19,8 @@ class RedshiftLoader(LoggerMixin):
         user: str,
         password: str,
         schema: str = 'public',
-        temp_dir: Optional[str] = None
+        temp_dir: Optional[str] = None,
+        iam_role: Optional[str] = None
     ):
         """
         Initialize Redshift loader
@@ -32,6 +33,7 @@ class RedshiftLoader(LoggerMixin):
             password: Password
             schema: Schema name (default: public)
             temp_dir: S3 temporary directory for staging
+            iam_role: IAM role ARN for S3 access (optional)
         """
         self.host = host
         self.port = port
@@ -40,6 +42,7 @@ class RedshiftLoader(LoggerMixin):
         self.password = password
         self.schema = schema
         self.temp_dir = temp_dir
+        self.iam_role = iam_role
         
         self.logger.info(f"Initialized RedshiftLoader for {host}:{port}/{database}")
     
@@ -142,12 +145,16 @@ class RedshiftLoader(LoggerMixin):
             
             # Build COPY command based on file format
             if file_format == 'parquet':
-                copy_query = f"""
-                    COPY {full_table_name}
-                    FROM '{s3_path}'
-                    IAM_ROLE 'arn:aws:iam::ACCOUNT_ID:role/RedshiftCopyRole'
-                    FORMAT AS PARQUET;
-                """
+                # Use IAM role if provided, otherwise fall back to access keys
+                if self.iam_role:
+                    copy_query = f"""
+                        COPY {full_table_name}
+                        FROM '{s3_path}'
+                        IAM_ROLE '{self.iam_role}'
+                        FORMAT AS PARQUET;
+                    """
+                else:
+                    raise ValueError("IAM role is required for Redshift COPY from S3. Set REDSHIFT_IAM_ROLE in .env file")
             elif file_format == 'csv':
                 copy_query = f"""
                     COPY {full_table_name}
